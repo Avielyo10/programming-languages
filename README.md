@@ -1,2 +1,1 @@
-# programming-languages
-Programming Languages - Course Exercises
+# Programming Languages - Course Exercises
