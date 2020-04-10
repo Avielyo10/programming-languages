@@ -20,7 +20,7 @@ plSuffixContained – consumes a list of strings
 and returns the first string that contains the string "pl" as a suffix – if one such
 exists, and returns #f otherwise.
 |#
-(: plSuffixContained : (Listof String) -> (U String Boolean))
+(: plSuffixContained : (Listof String) -> (U String #f))
 (define (plSuffixContained stringList)
     (if (and (list? stringList) (not (null? stringList))) ;; Check if it's non-empty list
         ;; Iteration with recursion
@@ -51,9 +51,14 @@ and using tail-recursion to handle the rest of the list till the list is empty.
 (: tail-recursion-write-poly : (Listof Number) Number String -> String)
 (define (tail-recursion-write-poly numberList index str)
     (let ([currNum (format "~a" (first numberList))] [currIndex (- index 1)])
-        (cond [(eq? currIndex 0) (format "~a~a" str currNum)]
-        [(eq? currIndex 1) (tail-recursion-write-poly (rest numberList) currIndex (format "~a~ax+" str currNum))]
-        [else (tail-recursion-write-poly (rest numberList) currIndex (format "~a~ax^~a+" str currNum currIndex))])
+        (cond 
+        [(eq? currIndex 0) (format "~a~a" str currNum)]
+        [(eq? currIndex 1) 
+            (tail-recursion-write-poly (rest numberList) currIndex 
+                (format "~a~ax~a" str currNum (if (> (second numberList) 0) "+" "")))]
+        [else 
+            (tail-recursion-write-poly (rest numberList) currIndex 
+                (format "~a~ax^~a~a" str currNum currIndex (if (> (second numberList) 0) "+" "")))])
     )
 )
 
@@ -73,9 +78,13 @@ coefficients) "𝑎_1𝑥^𝑛 + 𝑎_2𝑥^{𝑛−1} + ⋯ + 𝑎_𝑛".
 ;; Unit tests for write-poly
 (test (write-poly '()) => "")
 (test (write-poly '(3)) => "3")
+(test (write-poly '(-3)) => "-3")
 (test (write-poly '(3 2)) => "3x+2")
+(test (write-poly '(3 -2)) => "3x-2")
 (test (write-poly '(3 2 6)) => "3x^2+2x+6")
+(test (write-poly '(3 -2 6)) => "3x^2-2x+6")
 (test (write-poly '(7 8 9 10)) => "7x^3+8x^2+9x+10")
+(test (write-poly '(-7 8 9 -10)) => "-7x^3+8x^2+9x-10")
 
 ;; Q2.2
 #|
@@ -127,7 +136,7 @@ a keyed-stack and return the first (LIFO, last in first out) value that
 is keyed accordingly.
 If the key does not appear in the original stack, it should return #false.
 |#
-(: search-stack : Symbol KeyStack -> (U String Boolean))
+(: search-stack : Symbol KeyStack -> (U String #f))
 (define (search-stack symbol keyStack)
     (cases keyStack
         [(Push sym str stack) (if (eq? sym symbol) str (search-stack symbol stack))]
@@ -139,7 +148,7 @@ pop-stack – the pop operation takes as input a keyed-stack and return
 the keyed-stack without its first (keyed) value.
 If the original stack was empty, it should return #false.
 |#
-(: pop-stack : KeyStack -> (U KeyStack Boolean))
+(: pop-stack : KeyStack -> (U KeyStack #f))
 (define (pop-stack keyStack)
     (cases keyStack
         [(Push sym str stack) stack]
@@ -147,7 +156,7 @@ If the original stack was empty, it should return #false.
 )
 
 ;; Unit tests for KeyStack type
-(test (KeyStack? (EmptyKS))=> #t)
+(test (KeyStack? (EmptyKS)) => #t)
 (test (KeyStack? (Push 'a "AAA" (Push 'b "B" (Push 'a "A" (EmptyKS))))) => #t)
 
 ;; Constructor tests
