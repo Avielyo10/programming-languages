@@ -50,15 +50,18 @@ and using tail-recursion to handle the rest of the list till the list is empty.
 |#
 (: tail-recursion-write-poly : (Listof Number) Number String -> String)
 (define (tail-recursion-write-poly numberList index str)
-    (let ([currNum (format "~a" (first numberList))] [currIndex (- index 1)])
-        (cond 
-        [(eq? currIndex 0) (format "~a~a" str currNum)]
-        [(eq? currIndex 1) 
-            (tail-recursion-write-poly (rest numberList) currIndex 
-                (format "~a~ax~a" str currNum (if (> (second numberList) 0) "+" "")))]
-        [else 
-            (tail-recursion-write-poly (rest numberList) currIndex 
-                (format "~a~ax^~a~a" str currNum currIndex (if (> (second numberList) 0) "+" "")))])
+    (let ([currNum (first numberList)] [currIndex (- index 1)] [isCurrNumZero? (eq? (first numberList) 0)] [isStrNotEmpty? (not (zero? (string-length str)))])
+        (if (and isCurrNumZero? (> currIndex 0))
+            (tail-recursion-write-poly (rest numberList) currIndex (format "~a~a" str (if (and isStrNotEmpty? (> (second numberList) 0)) "+" "")))
+            (cond 
+            [(eq? currIndex 0) (format "~a~a" str (if (eq? currNum 0) "" currNum))]
+            [(eq? currIndex 1) 
+                (tail-recursion-write-poly (rest numberList) currIndex 
+                    (format "~a~ax~a" str currNum (if (> (second numberList) 0) "+" "")))]
+            [else 
+                (tail-recursion-write-poly (rest numberList) currIndex 
+                    (format "~a~ax^~a~a" str currNum currIndex (if (> (second numberList) 0) "+" "")))])
+        )
     )
 )
 
@@ -85,6 +88,8 @@ coefficients) "𝑎_1𝑥^𝑛 + 𝑎_2𝑥^{𝑛−1} + ⋯ + 𝑎_𝑛".
 (test (write-poly '(3 -2 6)) => "3x^2-2x+6")
 (test (write-poly '(7 8 9 10)) => "7x^3+8x^2+9x+10")
 (test (write-poly '(-7 8 9 -10)) => "-7x^3+8x^2+9x-10")
+(test (write-poly '(1 0 1 0)) => "1x^3+1x")
+(test (write-poly '(0 0 0 1 0)) => "1x")
 
 ;; Q2.2
 #|
