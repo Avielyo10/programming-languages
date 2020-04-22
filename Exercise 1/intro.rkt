@@ -9,6 +9,7 @@ returns #true iff a String ends with "pl".
 (define (endsWithPl? str)
     (let ([l (string-length str)])
         (and 
+            (> l 1)
             (eq? (string-ref str (- l 1)) #\l)
             (eq? (string-ref str (- l 2)) #\p)
         )
@@ -32,6 +33,7 @@ exists, and returns #f otherwise.
 )
     
 ;; Unit tests for endsWithPl?
+(test (endsWithPl? "l") => #f)
 (test (endsWithPl? "Pl") => #f)
 (test (endsWithPl? "ppl") => #t)
 
